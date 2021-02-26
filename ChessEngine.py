@@ -31,6 +31,56 @@ class GameState():
             self.board[move.endRow][move.endCol] = move.pieceCaptured
             self.whiteToMove = not self.whiteToMove  # switch turn back
 
+    # All moves considering checks
+    def getValidMoves(self):
+        return self.getAllPossibleMoves()
+
+    # All moves without considering checks
+    def getAllPossibleMoves(self):
+        moves = []
+        for r in range(len(self.board)):
+            for c in range(len(self.board[r])):
+                pieceColor = self.board[r][c][0]
+                if (pieceColor == 'w' and self.whiteToMove) and (pieceColor == 'b' and not self.whiteToMove):
+                    piece = self.board[r][c][1]
+                    if piece == 'p':
+                        self.getPawnMoves(r, c, moves)
+                    elif piece == 'R':
+                        self.getRookMoves(r, c, moves)
+                    elif piece == 'N':
+                        self.getKnightMoves(r, c, moves)
+                    elif piece == 'B':
+                        self.getBishopMoves(r, c, moves)
+                    elif piece == 'Q':
+                        self.getQueenMoves(r, c, moves)
+                    elif piece == 'K':
+                        self.getKingMoves(r, c, moves)
+        return moves
+
+    # Get all the pawn moves for the pawn located at row, col
+    def getPawnMoves(self, r, c, moves):
+        pass
+    # Get all the pawn moves for the pawn located at row, col
+
+    def getRookMoves(self, r, c, moves):
+        pass
+    # Get all the pawn moves for the pawn located at row, col
+
+    def getKnightMoves(self, r, c, moves):
+        pass
+    # Get all the pawn moves for the pawn located at row, col
+
+    def getBishopMoves(self, r, c, moves):
+        pass
+    # Get all the pawn moves for the pawn located at row, col
+
+    def getQueenMoves(self, r, c, moves):
+        pass
+    # Get all the pawn moves for the pawn located at row, col
+
+    def getKingMoves(self, r, c, moves):
+        pass
+
 
 class Move():
     # map keys to values
@@ -50,6 +100,16 @@ class Move():
         self.endCol = endSq[1]
         self.pieceMoved = board[self.startRow][self.startCol]
         self.pieceCaptured = board[self.endRow][self.endCol]
+
+        self.moveID = self.startRow * 1000 + self.startCol * \
+            100 + self.endRow * 10 + self.endCol
+        print(self.moveID)
+
+    # overriding the equals method
+    def __eq__(self, other):
+        if isinstance(other, Move):
+            return self.moveID == other.moveID
+        return False
 
     def get_chess_notation(self):
         return self.get_rank_file(self.startRow, self.startCol) + self.get_rank_file(self.endRow, self.endCol)
