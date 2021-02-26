@@ -22,6 +22,15 @@ class GameState():
         self.moveLog.append(move)  # log the move
         self.whiteToMove = not self.whiteToMove  # swap players
 
+    # Undo last move
+
+    def undo_move(self):
+        if len(self.moveLog) != 0:
+            move = self.moveLog.pop()
+            self.board[move.startRow][move.startCol] = move.pieceMoved
+            self.board[move.endRow][move.endCol] = move.pieceCaptured
+            self.whiteToMove = not self.whiteToMove  # switch turn back
+
 
 class Move():
     # map keys to values

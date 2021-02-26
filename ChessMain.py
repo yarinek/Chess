@@ -26,7 +26,7 @@ def main():
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
     screen.fill(pygame.Color("white"))
-    gs = ChessEngine.GameState()  # GAME_STATE
+    game_state = ChessEngine.GameState()  # GAME_STATE
     load_images()
     running = True
     sqSelected = ()  # Square clicked by user tuple(row, col)
@@ -36,6 +36,9 @@ def main():
         for e in pygame.event.get():
             if e.type == pygame.QUIT:
                 running = False
+
+            # mouse handler
+
             elif e.type == pygame.MOUSEBUTTONDOWN:
                 location = pygame.mouse.get_pos()  # (x,y) location of mouse
                 col = location[0]//SQ_SIZE
@@ -48,21 +51,27 @@ def main():
                     playerClicks.append(sqSelected)
                 if len(playerClicks) == 2:  # after 2nd click
                     move = ChessEngine.Move(
-                        playerClicks[0], playerClicks[1], gs.board)
+                        playerClicks[0], playerClicks[1], game_state.board)
                     print(move.get_chess_notation())
-                    gs.make_move(move)
+                    game_state.make_move(move)
                     sqSelected = ()  # Reset clicks
                     playerClicks = []  # Reset clicks
-        drawGameState(screen, gs)
+
+            # key handler
+            elif e.type == pygame.KEYDOWN:
+                if e.key == pygame.K_z:  # "z" pressed
+                    game_state.undo_move()
+
+        drawGameState(screen, game_state)
         clock.tick(15)
         pygame.display.flip()
 
 
 # Graphic
-def drawGameState(screen, gs):
+def drawGameState(screen, game_state):
     drawBoard(screen)
     # later
-    drawPieces(screen, gs.board)
+    drawPieces(screen, game_state.board)
 
 # Draw the squares on the board
 
