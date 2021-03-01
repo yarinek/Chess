@@ -41,7 +41,7 @@ class GameState():
         for r in range(len(self.board)):
             for c in range(len(self.board[r])):
                 pieceColor = self.board[r][c][0]
-                if (pieceColor == 'w' and self.whiteToMove) and (pieceColor == 'b' and not self.whiteToMove):
+                if (pieceColor == 'w' and self.whiteToMove) or (pieceColor == 'b' and not self.whiteToMove):
                     piece = self.board[r][c][1]
                     if piece == 'p':
                         self.getPawnMoves(r, c, moves)
@@ -59,24 +59,59 @@ class GameState():
 
     # Get all the pawn moves for the pawn located at row, col
     def getPawnMoves(self, r, c, moves):
-        pass
-    # Get all the pawn moves for the pawn located at row, col
+        # Moves for white pieces
+        if self.whiteToMove:
+            # Moves from start position
+            if self.board[r-1][c] == "--":
+                if r == 6 and self.board[r-2][c] == "--":
+                    moves.append(Move((r, c), (r-2, c), self.board))
+                    moves.append(Move((r, c), (r-1, c), self.board))
+                # Basic pawn move
+                else:
+                    moves.append(Move((r, c), (r-1, c), self.board))
+
+            # Pawn attack
+            if c != 0 and self.board[r-1][c-1][0] == 'b':
+                moves.append(Move((r, c), (r-1, c-1), self.board))
+
+            if c != 7 and self.board[r-1][c+1][0] == 'b':
+                moves.append(Move((r, c), (r-1, c+1), self.board))
+
+        # Moves for black pieces
+        if self.whiteToMove == 0:
+            # Moves from start position
+            if r == 1 and self.board[r+2][c] == "--" and self.board[r+1][c] == "--":
+                moves.append(Move((r, c), (r+2, c), self.board))
+                moves.append(Move((r, c), (r+1, c), self.board))
+
+            # Basic pawn move
+            elif self.board[r+1][c] == "--":
+                moves.append(Move((r, c), (r+1, c), self.board))
+
+            # Pawn attack
+            if c != 0 and self.board[r+1][c-1][0] == 'w':
+                moves.append(Move((r, c), (r+1, c-1), self.board))
+
+            if c != 7 and self.board[r+1][c+1][0] == 'w':
+                moves.append(Move((r, c), (r+1, c+1), self.board))
+        return moves
+    # Get all the rook moves for the rook located at row, col
 
     def getRookMoves(self, r, c, moves):
         pass
-    # Get all the pawn moves for the pawn located at row, col
+    # Get all the knight moves for the knight located at row, col
 
     def getKnightMoves(self, r, c, moves):
         pass
-    # Get all the pawn moves for the pawn located at row, col
+    # Get all the bishop moves for the bishop located at row, col
 
     def getBishopMoves(self, r, c, moves):
         pass
-    # Get all the pawn moves for the pawn located at row, col
+    # Get all the queen moves for the queen located at row, col
 
     def getQueenMoves(self, r, c, moves):
         pass
-    # Get all the pawn moves for the pawn located at row, col
+    # Get all the king moves for the king located at row, col
 
     def getKingMoves(self, r, c, moves):
         pass
