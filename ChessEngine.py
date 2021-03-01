@@ -50,35 +50,21 @@ class GameState():
                         ChessFigures.Pawn(self.board).getMoves(
                             r, c, moves, self.whiteToMove, Move)
                     elif piece == 'R':
-                        self.getRookMoves(r, c, moves)
+                        ChessFigures.Rook(self.board).getMoves(
+                            r, c, moves, self.whiteToMove, Move)
                     elif piece == 'N':
-                        self.getKnightMoves(r, c, moves)
+                        ChessFigures.Knight(self.board).getMoves(
+                            r, c, moves, self.whiteToMove, Move)
                     elif piece == 'B':
-                        self.getBishopMoves(r, c, moves)
+                        ChessFigures.Bishop(self.board).getMoves(
+                            r, c, moves, self.whiteToMove, Move)
                     elif piece == 'Q':
-                        self.getQueenMoves(r, c, moves)
+                        ChessFigures.Queen(self.board).getMoves(
+                            r, c, moves, self.whiteToMove, Move)
                     elif piece == 'K':
-                        self.getKingMoves(r, c, moves)
+                        ChessFigures.King(self.board).getMoves(
+                            r, c, moves, self.whiteToMove, Move)
         return moves
-
-    def getRookMoves(self, r, c, moves):
-        pass
-    # Get all the knight moves for the knight located at row, col
-
-    def getKnightMoves(self, r, c, moves):
-        pass
-    # Get all the bishop moves for the bishop located at row, col
-
-    def getBishopMoves(self, r, c, moves):
-        pass
-    # Get all the queen moves for the queen located at row, col
-
-    def getQueenMoves(self, r, c, moves):
-        pass
-    # Get all the king moves for the king located at row, col
-
-    def getKingMoves(self, r, c, moves):
-        pass
 
 
 class Move():
