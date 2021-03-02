@@ -16,14 +16,25 @@ class GameState():
             ["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
             ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"]
         ]
+        self.moveFunctions = {"p": ChessFigures.Pawn(self.board).getMoves, "R": ChessFigures.Rook(self.board).getMoves, "N": ChessFigures.Knight(
+            self.board).getMoves, "B": ChessFigures.Bishop(self.board).getMoves, "Q": ChessFigures.Queen(self.board).getMoves, "K": ChessFigures.King(self.board).getMoves}
         self.whiteToMove = True
         self.moveLog = []
+        self.whiteKingLocation = (7, 4)
+        self.blackKingLocation = (0, 4)
+        self.checkMate = False
+        self.staleMate = False
 
     def make_move(self, move):
         self.board[move.startRow][move.startCol] = '--'
         self.board[move.endRow][move.endCol] = move.pieceMoved
         self.moveLog.append(move)  # log the move
         self.whiteToMove = not self.whiteToMove  # swap players
+        # Update king's location:
+        if move.pieceMoved == 'wK':
+            self.whiteKingLocation = (move.endRow, move.endCol)
+        elif move.pieceMoved == 'bK':
+            self.blackKingLocation = (move.endRow, move.endCol)
 
     # Undo last move
 
@@ -33,12 +44,54 @@ class GameState():
             self.board[move.startRow][move.startCol] = move.pieceMoved
             self.board[move.endRow][move.endCol] = move.pieceCaptured
             self.whiteToMove = not self.whiteToMove  # switch turn back
+        # Update king's location:
+        if move.pieceMoved == 'wK':
+            self.whiteKingLocation = (move.startRow, move.startCol)
+        elif move.pieceMoved == 'bK':
+            self.blackKingLocation = (move.startRow, move.startCol)
 
     # All moves considering checks
     def getValidMoves(self):
-        return self.getAllPossibleMoves()
+        # Generate all moves:
+        moves = self.getAllPossibleMoves()
+        # For each move make the move:
+        for i in range(len(moves)-1, -1, -1):
+            self.make_move(moves[i])
+            # generate all opponent's move
+            self.whiteToMove = not self.whiteToMove
+            if self.inCheck():
+                moves.remove(moves[i])  # Remove move if not a valid
+            self.whiteToMove = not self.whiteToMove
+            self.undo_move()
+        
+        if len(moves) == 0:  # No valid moves
+            if self.inCheck():
+                self.checkMate = True
+            else:
+                self.staleMate = True
+        else:
+            self.checkMate = False
+            self.staleMate = False
 
-    # All moves without considering checks
+        return moves
+
+    # Determine if correct player is in check
+    def inCheck(self):
+        if self.whiteToMove:
+            return self.squareUnderAttack(self.whiteKingLocation[0], self.whiteKingLocation[1])
+        else:
+            return self.squareUnderAttack(self.blackKingLocation[0], self.blackKingLocation[1])
+
+    # Determine if the enemy can attack the square
+    def squareUnderAttack(self, r, c):
+        self.whiteToMove = not self.whiteToMove  # switch to opponent's turn
+        opponentMoves = self.getAllPossibleMoves()
+        self.whiteToMove = not self.whiteToMove  # switch turn back
+        for move in opponentMoves:
+            if move.endRow == r and move.endCol == c:  # square is under attack
+                return True
+        return False
+
     def getAllPossibleMoves(self):
         moves = []
         for r in range(len(self.board)):
@@ -46,24 +99,8 @@ class GameState():
                 pieceColor = self.board[r][c][0]
                 if (pieceColor == 'w' and self.whiteToMove) or (pieceColor == 'b' and not self.whiteToMove):
                     piece = self.board[r][c][1]
-                    if piece == 'p':
-                        ChessFigures.Pawn(self.board).getMoves(
-                            r, c, moves, self.whiteToMove, Move)
-                    elif piece == 'R':
-                        ChessFigures.Rook(self.board).getMoves(
-                            r, c, moves, self.whiteToMove, Move)
-                    elif piece == 'N':
-                        ChessFigures.Knight(self.board).getMoves(
-                            r, c, moves, self.whiteToMove, Move)
-                    elif piece == 'B':
-                        ChessFigures.Bishop(self.board).getMoves(
-                            r, c, moves, self.whiteToMove, Move)
-                    elif piece == 'Q':
-                        ChessFigures.Queen(self.board).getMoves(
-                            r, c, moves, self.whiteToMove, Move)
-                    elif piece == 'K':
-                        ChessFigures.King(self.board).getMoves(
-                            r, c, moves, self.whiteToMove, Move)
+                    self.moveFunctions[piece](
+                        r, c, moves, self.whiteToMove, Move)
         return moves
 
 

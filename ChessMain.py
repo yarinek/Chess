@@ -59,8 +59,10 @@ def main():
                     if move in validMoves:
                         game_state.make_move(move)
                         moveMade = True
-                    sqSelected = ()  # Reset clicks
-                    playerClicks = []  # Reset clicks
+                        sqSelected = ()  # Reset clicks
+                        playerClicks = []  # Reset clicks
+                    else:
+                        playerClicks = [sqSelected]
 
             # key handler
             elif e.type == pygame.KEYDOWN:

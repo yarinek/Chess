@@ -22,6 +22,7 @@ class Pawn():
             if c != 7 and self.board[r-1][c+1][0] == 'b':
                 moves.append(Move((r, c), (r-1, c+1), self.board))
 
+
         # Moves for black pieces
         if not whiteToMove:
             # Moves from start position
