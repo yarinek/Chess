@@ -51,6 +51,10 @@ class GameState():
         elif move.pieceMoved == 'bK':
             self.blackKingLocation = (move.endRow, move.endCol)
 
+        # Pawn promotion
+        if move.isPawnPromotion:
+            self.board[move.endRow][move.endCol] = move.pieceMoved[0] + 'Q'
+
     # Undo last move
 
     def undo_move(self):
@@ -78,16 +82,12 @@ class GameState():
                 moves.remove(moves[i])  # Remove move if not a valid
             self.whiteToMove = not self.whiteToMove
             self.undo_move()
-        
+
         if len(moves) == 0:  # No valid moves
             if self.inCheck():
                 self.checkMate = True
             else:
                 self.staleMate = True
-        else:
-            self.checkMate = False
-            self.staleMate = False
-
         return moves
 
     # Determine if correct player is in check
@@ -137,6 +137,10 @@ class Move():
         self.endCol = endSq[1]
         self.pieceMoved = board[self.startRow][self.startCol]
         self.pieceCaptured = board[self.endRow][self.endCol]
+
+        # Pawn promotion
+        self.isPawnPromotion = ((self.pieceMoved == 'wP' and self.endRow == 0) or (
+            self.pieceMoved == 'bP' and self.endRow == 7))
 
         self.moveID = self.startRow * 1000 + self.startCol * \
             100 + self.endRow * 10 + self.endCol
